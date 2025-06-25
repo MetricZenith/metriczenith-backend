@@ -25,7 +25,7 @@ app.post('/analyze', upload.single('file'), async (req, res) => {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     fs.unlinkSync(filePath); // Delete the file after reading
 
-    const prompt = \`Analyze the following CSV marketing data and summarize key performance insights including top ads, CTR, CPA, ROAS, and any anomalies. Format it in clear, plain English:\n\n\${fileContent}\`;
+    const prompt = `Analyze the following CSV marketing data and summarize key performance insights including top ads, CTR, CPA, ROAS, and any anomalies. Format it in clear, plain English:\n\n${fileContent}`;
 
     const completion = await openai.createChatCompletion({
       model: 'gpt-4',
