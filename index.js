@@ -5,7 +5,7 @@ const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const fs = require('fs');
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require("openai");
 require('dotenv').config();
 
 const app = express();
@@ -14,11 +14,9 @@ const upload = multer({ dest: 'uploads/' });
 app.use(cors());
 app.use(express.json());
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
-const openai = new OpenAIApi(configuration);
-
 app.post('/analyze', upload.single('file'), async (req, res) => {
   try {
     const filePath = req.file.path;
