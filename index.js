@@ -19,13 +19,19 @@ const openai = new OpenAI({
 });
 app.post('/analyze', upload.single('file'), async (req, res) => {
   try {
+    // ✅ Validate that a file was uploaded
+    if (!req.file) {
+      console.error('No file received in the request.');
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+
     const filePath = req.file.path;
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     fs.unlinkSync(filePath); // Delete the file after reading
 
     const prompt = `Analyze the following CSV marketing data and summarize key performance insights including top ads, CTR, CPA, ROAS, and any anomalies. Format it in clear, plain English:\n\n${fileContent}`;
 
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
         { role: 'system', content: 'You are a marketing analytics assistant.' },
@@ -33,10 +39,10 @@ app.post('/analyze', upload.single('file'), async (req, res) => {
       ]
     });
 
-    res.json({ insights: completion.data.choices[0].message.content });
+    res.json({ insights: completion.choices[0].message.content });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Something went wrong.' });
+    console.error('Server error during file analysis:', err);
+    res.status(500).json({ error: err.message || 'Something went wrong.' });
   }
 });
 
